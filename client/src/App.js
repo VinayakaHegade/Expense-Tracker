@@ -28,14 +28,14 @@ function App() {
       <AppBar />
 
       <Container>
+        <TransactionForm fetchTransactions={fetchTransactions} />
 
-      <TransactionForm fetchTransactions={fetchTransactions} />
-
-      <TransactionsList transactions={transactions} />
-      
+        <TransactionsList
+          transactions={transactions}
+          fetchTransactions={fetchTransactions}
+        />
       </Container>
       <br />
-
     </div>
   );
 }
