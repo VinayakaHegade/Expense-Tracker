@@ -2,16 +2,17 @@ import { Router } from "express";
 import TransactionsApi from "./TransactionsApi.js";
 import AuthApi from "./AuthApi.js";
 import UserApi from "./UserApi.js";
+import CategoryApi from "./CategoryApi.js"
 import passport from "passport";
+
 
 const router = Router();
 
-router.use(
-  "/transaction",
-  passport.authenticate("jwt", { session: false }),
-  TransactionsApi
-);
+const auth = passport.authenticate("jwt", { session: false });
+
+router.use("/transaction", auth, TransactionsApi);
 router.use("/auth", AuthApi);
 router.use("/user", UserApi);
+router.use("/category",auth, CategoryApi);
 
 export default router;

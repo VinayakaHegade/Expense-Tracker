@@ -8,20 +8,36 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Cookies from "js-cookie";
-
+import Autocomplete from "@mui/material/Autocomplete";
+import Box from "@mui/material/Box";
+import { display } from "@mui/system";
+import { useSelector } from "react-redux";
 
 const initialForm = {
   amount: 0,
   description: "",
   date: new Date(),
+  category_id: "",
 };
 
 export default function TransactionForm({
   fetchTransactions,
   editTransaction,
 }) {
-  const token = Cookies.get('token')
+  const {categories} = useSelector(state => state.auth.user)
+  const token = Cookies.get("token");
   const [form, setForm] = useState(initialForm);
+  // const categories = [
+    // {label: "Needs"},
+    // {label: "Wants"},
+    // {label: "Savings"},
+  //   { label: "Shopping" },
+  //   { label: "Travel" },
+  //   { label: "Investment" },
+  //   { label: "Bills" },
+  //   { label: "Entertainment" },
+  //   { label: "Others" },
+  // ];
 
   useEffect(() => {
     if (editTransaction.amount !== undefined) {
@@ -38,15 +54,15 @@ export default function TransactionForm({
   }
 
   async function handleSubmit(e) {
-    e.preventDefault(); 
+    e.preventDefault();
     editTransaction.amount === undefined ? create() : update();
   }
 
   function reload(res) {
-      if (res.ok) {
-        setForm(initialForm);
-        fetchTransactions();
-      }
+    if (res.ok) {
+      setForm(initialForm);
+      fetchTransactions();
+    }
   }
 
   async function create() {
@@ -55,24 +71,31 @@ export default function TransactionForm({
       body: JSON.stringify(form),
       headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     reload(res);
   }
 
   async function update() {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/transaction/${editTransaction._id}`,
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL}/transaction/${editTransaction._id}`,
       {
         method: "PATCH",
         body: JSON.stringify(form),
         headers: {
           "content-type": "application/json",
-           "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
     reload(res);
+  }
+
+  function getCategoryNameById() {
+    return(
+      categories.find((category) => category._id === form.category_id) ?? ""
+    );
   }
 
   return (
@@ -82,7 +105,11 @@ export default function TransactionForm({
       </Typography>
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
-          <form onSubmit={handleSubmit}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ display: "flex" }}
+          >
             <TextField
               sx={{ marginRight: 5 }}
               size="small"
@@ -114,6 +141,20 @@ export default function TransactionForm({
                 )}
               />
             </LocalizationProvider>
+
+            <Autocomplete
+              value={getCategoryNameById()}
+              onChange={(event, newValue) => {
+                setForm({ ...form, category_id: newValue._id });
+              }}
+              id="controllable-states-demo"
+              options={categories}
+              sx={{ width: 200, marginRight: 5 }}
+              size="small"
+              renderInput={(params) => (
+                <TextField {...params} label="Category" />
+              )}
+            />
             {editTransaction.amount !== undefined && (
               <Button type="submit" variant="secondary">
                 Update
@@ -124,7 +165,7 @@ export default function TransactionForm({
                 Submit
               </Button>
             )}
-          </form>
+          </Box>
         </CardContent>
       </Card>
     </>
