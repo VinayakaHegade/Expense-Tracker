@@ -6,11 +6,17 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../store/auth.js";
 
 export default function ButtonAppBar() {
   const navigate = useNavigate();
-  function logout() {
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  function _logout() {
     Cookies.remove("token");
+    dispatch(logout());
     navigate("/login");
   }
 
@@ -23,13 +29,22 @@ export default function ButtonAppBar() {
               Expensor
             </Link>
           </Typography>
-          <Button color="inherit" onClick={logout}>Logout</Button>
-          <Link to="/login" className="text-white">
-            <Button color="inherit">Login</Button>
-          </Link>
-          <Link to="/register" className="text-white">
-            <Button color="inherit">Register</Button>
-          </Link>
+          {isAuthenticated && (
+            <Button color="inherit" onClick={_logout}>
+              Logout
+            </Button>
+          )}
+
+          {!isAuthenticated && (
+            <>
+              <Link to="/login" className="text-white">
+                <Button color="inherit">Login</Button>
+              </Link>
+              <Link to="/register" className="text-white">
+                <Button color="inherit">Register</Button>
+              </Link>
+            </>
+          )}
         </Toolbar>
       </AppBar>
     </Box>

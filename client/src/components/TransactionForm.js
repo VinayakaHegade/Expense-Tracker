@@ -60,8 +60,7 @@ export default function TransactionForm({
   }
 
   async function update() {
-    const res = await fetch(
-      `${process.env.REACT_APP_API_URL}/${editTransaction._id}`,
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/transaction/${editTransaction._id}`,
       {
         method: "PATCH",
         body: JSON.stringify(form),
