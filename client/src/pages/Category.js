@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../store/auth.js";
+import CategoryForm from "../components/CategoryForm.js";
 
 export default function Category({}) {
   const token = Cookies.get("token");
@@ -39,6 +40,7 @@ export default function Category({}) {
 
   return (
     <Container>
+      <CategoryForm editCategory={{}} fetchTransactions={()=>{}}/>
       <Typography sx={{ marginTop: 10 }} variant="h6">
         List of Categories
       </Typography>
